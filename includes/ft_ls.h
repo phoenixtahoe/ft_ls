@@ -6,56 +6,87 @@
 /*   By: pdavid <pdavid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/08 14:13:22 by pdavid            #+#    #+#             */
-/*   Updated: 2019/05/08 15:51:14 by pdavid           ###   ########.fr       */
+/*   Updated: 2019/05/08 18:51:50 by pdavid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef FT_LS_H
 # define FT_LS_H
 
-# include "../includes/libft/libft.h"
+# include <dirent.h>
+# include <stdint.h>
+# include <stdlib.h>
+# include <stdio.h>
+# include "./libft/libft.h"
+# include <errno.h>
+# include <string.h>
 # include <sys/types.h>
 # include <sys/stat.h>
-# include <dirent.h>
-# include <dirent.h>
+# include <sys/xattr.h>
 # include <unistd.h>
-# include <stdlib.h>
-# include <unistd.h>
-# include <time.h>
-# include <pwd.h>
 # include <grp.h>
-# include <stdio.h>
+# include <pwd.h>
 # include <stdbool.h>
+# include <time.h>
 
-typedef struct	s_flags
+# define IFa e->options->a
+# define IFR e->options->R
+# define IFr e->options->r
+# define IFl e->options->l
+# define IFt e->options->t
+# define USR struct passwd *usr
+# define DATA info->data->st_mode
+# define PATH e->paths[e->px]
+# define HEDDATA head->data->st_mode
+# define ARGLETTER argv[e->x][e->i]
+# define ISDOT strcmp(file->d_name, ".")
+# define DOTCMP ft_strncmp(file->d_name, "..", 3)
+# define STRJOIN2 ft_strjoin2(path, file->d_name)
+# define STRNEW ft_strnew(ft_strlen(head->path) + 1)
+# define NOTDOT (ft_strncmp(file->d_name, ".", 1) != 0)
+# define DRPERMS S_ISDIR(DATA) && IFR && (S_IRUSR & DATA) && PERMS
+# define PERMS (S_IRGRP & DATA) && (S_IROTH & DATA) && (S_IWUSR & DATA)
+
+typedef	struct			s_options
 {
-	char 	*cur;
-	bool		l;
-	bool		cr;
-	bool		a;
-	bool		r;
-	bool		t;
-	int			flag;
-}				t_flags;
+	bool				R;
+	bool				a;
+	bool				t;
+	bool				l;
+	bool				r;
+}						t_options;
 
-typedef struct	s_dir
+typedef	struct			s_info
 {
-	char 	**cur;
-	int		dir;
-}				t_dir;
+	char				*name;
+	char				*path;
+	char				*color;
+	struct	stat		*data;
+	struct	s_info		*next;
+	struct	s_info		*prev;
+	struct	s_info		*sub;
+	struct	timespec	time;
+}						t_info;
 
-typedef struct	s_env
+typedef	struct			s_env
 {
-	t_flags		*flags;
-	t_dir		*dir;
-	int			i;
-	int			ret;
-	int			len;
-	
-}				t_env;
+	t_info				*info;
+	t_info				*args;
+	t_info				*dargs;
+	t_options			*options;
+	char				**paths;
+	char				*type;
+	char				*temp;
+	bool				run;
+	bool				tot;
+	bool				run2;
+	int					total;
+	int					px;
+	int					x;
+	int					i;
+}						t_env;
 
-char 	*format_flags(char *av[], int *flags);
-void	get_flags(t_env *e);
-void	init_flags(t_env *e);
+void init_env(t_env *e, int ac);
+t_info *ft_create_node(t_info *info, char *path, char *name);
 
 #endif
