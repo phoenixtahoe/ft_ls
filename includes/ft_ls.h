@@ -6,7 +6,7 @@
 /*   By: pdavid <pdavid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/08 14:13:22 by pdavid            #+#    #+#             */
-/*   Updated: 2019/05/08 18:51:50 by pdavid           ###   ########.fr       */
+/*   Updated: 2019/05/10 21:38:35 by pdavid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,11 +29,11 @@
 # include <stdbool.h>
 # include <time.h>
 
-# define IFa e->options->a
-# define IFR e->options->R
-# define IFr e->options->r
-# define IFl e->options->l
-# define IFt e->options->t
+# define IFa e->options.a
+# define IFR e->options.R
+# define IFr e->options.r
+# define IFl e->options.l
+# define IFt e->options.t
 # define USR struct passwd *usr
 # define DATA info->data->st_mode
 # define PATH e->paths[e->px]
@@ -73,7 +73,7 @@ typedef	struct			s_env
 	t_info				*info;
 	t_info				*args;
 	t_info				*dargs;
-	t_options			*options;
+	t_options			options;
 	char				**paths;
 	char				*type;
 	char				*temp;
@@ -86,6 +86,7 @@ typedef	struct			s_env
 	int					i;
 }						t_env;
 
+void ft_display(t_env *e, t_info *head);
 void init_env(t_env *e, int ac);
 t_info *ft_create_node(t_info *info, char *path, char *name);
 

@@ -6,11 +6,116 @@
 /*   By: pdavid <pdavid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/08 14:08:55 by pdavid            #+#    #+#             */
-/*   Updated: 2019/05/08 19:58:03 by pdavid           ###   ########.fr       */
+/*   Updated: 2019/05/10 22:05:40 by pdavid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/ft_ls.h"
+
+t_info	*ft_split(t_info *head)
+{
+	t_info *fast;
+	t_info *slow;
+	t_info *temp;
+
+	fast = head;
+	slow = head;
+	while (fast->next && fast->next->next)
+	{
+		fast = fast->next->next;
+		slow = slow->next;
+	}
+	temp = slow->next;
+	slow->next = NULL;
+	return (temp);
+}
+
+t_info  *ft_time_sort(t_env *e, t_info *first, t_info *second)
+{
+	if (!(first))
+		return (second);
+	if (!(second))
+		return (first);
+	// if (ft_get_time(first, second))
+	// {
+	// 	first->next = ft_time_sort(e, first->next, second);
+	// 	first->next->prev = first;
+	// 	first->prev = NULL;
+	// 	return (first);
+	// }
+	else
+	{
+		second->next = ft_time_sort(e, first, second->next);
+		second->next->prev = second;
+		second->prev = NULL;
+		return (second);
+	}
+}
+
+t_info  *ft_merge_links(t_env *e, t_info *first, t_info *second)
+{
+	if (!(first))
+		return (second);
+	if (!(second))
+		return (first);
+	if (first->name[e->i] < second->name[e->i])
+	{
+		e->i = 0;
+		first->next = ft_merge_links(e, first->next, second);
+		first->next->prev = first;
+		first->prev = NULL;
+		return (first);
+	}
+	else if (first->name[e->i] > second->name[e->i]) 
+	{
+		e->i = 0;
+		second->next = ft_merge_links(e, first, second->next);
+		second->next->prev = second;
+		second->prev = NULL;
+		return (second);
+	}
+	else
+	{
+		e->i++;
+		return (ft_merge_links(e, first, second));
+	}
+}
+
+t_info  *ft_merge_sort(t_env *e, t_info *head)
+{
+	t_info *second;
+	t_info *ptr;
+
+	e->i = 0;
+	ptr = head;
+	if (!head || !head->next)
+		return head;
+	second = ft_split(head);
+	head = ft_merge_sort(e, head);
+	second = ft_merge_sort(e, second);
+	return (e->options.t == true ? ft_time_sort(e, head, second) 
+		: ft_merge_links(e, head, second));
+}
+
+t_info *ft_init_merge(t_env *e, t_info *head)
+{
+	t_info *ptr;
+
+	if (head)
+	{
+		head = ft_merge_sort(e, head);
+	}
+	ptr = head;
+	while (ptr != NULL)
+	{
+		if (ptr->sub)
+		{
+			ptr->sub = ft_init_merge(e, ptr->sub);
+		}
+		ptr = ptr->next;
+	}
+	return (head);
+}
 
 t_info	*ft_ls(t_env *e, char *path, t_info *info)
 {
@@ -102,6 +207,29 @@ void		ft_toggle_options(int argc, char **argv, t_env *e)
 	ft_toggle_options(argc, argv, e);
 }
 
+void		ft_make_files(t_env *e)
+{
+	if (e->args)
+	{
+		e->args = ft_init_merge(e, e->args);
+		e->tot = false;
+		ft_display(e, e->args);
+		e->tot = true;
+		if (e->dargs)
+		{
+			write (1, "\n", 1);
+		}
+	}
+}
+
+void		ft_check_file(t_env *e, struct stat *info)
+{
+	if (ft_strcmp(e->paths[e->px], ".") != 0)
+	{
+		lstat(e->paths[e->px], info);
+	}
+}
+
 void		ft_check_paths(t_env *e)
 {
 	struct stat     *info;
@@ -130,23 +258,38 @@ void		ft_check_paths(t_env *e)
 	e->i = 0;
 }
 
+void ft_doshit(t_env *e, t_info *temp)
+{
+	e->info = ft_init_merge(e, e->info);
+	ft_display(e, e->info);
+	if (temp->next || (temp->prev && e->options.r))
+		write(1, "\n", 1);
+	e->run = true;
+}
+
+
 int main(int ac, char **av)
 {
 	t_env e;
 	t_info *temp;
 
 	init_env(&e, ac);
+	ft_toggle_options(ac, av, &e);
 	parse_path(ac, av, &e);
-	check_paths(&e);
-	if (e.options->r)
-		// e.dargs = ft_goto_end(e, e.dargs);
-		printf("%s\n", "dumb idiot");
+	ft_check_paths(&e);
+	if (e.options.r)
+		// e.dargs = ft_goto_end(&e, e.dargs);
+		printf("%s\n", "fag boi");
 	temp = e.dargs;
 	while (temp)
 	{
-		printf("%s\n", "wubs is dumb idiot");
-		// ft_doshit(e, temp);
-		// temp = e.options->r ? temp->prev : temp->next;
+		if (!(e.info = ft_ls(&e, temp->name, e.info)))
+		{
+			temp = e.options.r ? temp->prev : temp->next;
+			continue ;
+		}
+		ft_doshit(&e, temp);
+		temp = e.options.r ? temp->prev : temp->next;
 	}
 	return (0);
 }
