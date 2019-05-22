@@ -6,7 +6,7 @@
 #    By: pdavid <pdavid@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/05/08 14:52:42 by pdavid            #+#    #+#              #
-#    Updated: 2019/05/08 19:00:59 by pdavid           ###   ########.fr        #
+#    Updated: 2019/05/22 16:24:45 by pdavid           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -21,9 +21,11 @@ FLAGS = -Wall -Werror -Wextra
 INC = -I ./includes/ -I ./$(LIBFT_PATH)includes/
 
 SRCS_NAME = main.c \
-			tools.c \
-			init.c \
 			list.c \
+			init.c \
+			sort.c \
+			print.c \
+			validator.c \
 
 SRCS = $(addprefix $(SRCS_PATH), $(SRCS_NAME))
 OBJ = $(addprefix $(OBJ_PATH), $(SRCS_NAME:.c=.o))

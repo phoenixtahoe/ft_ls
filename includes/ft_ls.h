@@ -6,7 +6,7 @@
 /*   By: pdavid <pdavid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/08 14:13:22 by pdavid            #+#    #+#             */
-/*   Updated: 2019/05/10 21:38:35 by pdavid           ###   ########.fr       */
+/*   Updated: 2019/05/22 16:24:06 by pdavid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,8 +86,52 @@ typedef	struct			s_env
 	int					i;
 }						t_env;
 
-void ft_display(t_env *e, t_info *head);
-void init_env(t_env *e, int ac);
-t_info *ft_create_node(t_info *info, char *path, char *name);
+/*		Functions that validate				*/
+/*		flags, paths, dirs					*/
+	
+	void				validate_path(t_env *e);
+	void				validate_dir(t_env *e, struct stat *info);
+	void    			validate_total(t_env *e, t_info *head);
+	
+/*		Functions that handle				*/
+/*		sorting of the ls					*/
+
+	t_info				*time_sort(t_env *e, t_info *first, t_info *second);
+	t_info				*recursive_sort(t_env *e, t_info *head);
+	t_info				*merge_sort(t_env *e, t_info *head);
+	
+/*		Functions that initialize			*/
+/*		the merge-sort, flags, environment	*/
+
+	t_info 				*init_merge(t_env *e, t_info *head);
+	void				init_ls(t_env *e, t_info *temp);
+	void				init_flags(int argc, char **argv, t_env *e);
+	void				init_env(t_env *e, int ac);
+	void				init_paths(t_env *e, int ac);
+	
+/*		Functions that magically			*/
+/*		sort my list's aka (merge-sort method)	*/
+
+t_info					*create_list(t_info *info, char *path, char *name);
+t_info					*merge_links(t_env *e, t_info *first, t_info *second);
+t_info					*merge_split(t_info *head);
+
+/*		Functions that are print			*/
+/* 		long, basic etc...					*/
+
+void				long_print(t_env *e, t_info *head);
+void				basic_print(t_env *e, t_info *head);
+void				info_print(t_info *head);
+void				time_print(t_info *head);
+void				path_print(t_env *e, t_info *head);
+void				display_print(t_env *e, t_info *head);
+
+/*		Functions that are utils			*/
+/* 											*/
+
+t_info				*err(int i, char *str);
+void				parse_files(t_env *e);
+void				parse_path(int ac, char **av, t_env *e);
+t_info				*ft_ls(t_env *e, char *path, t_info *info);
 
 #endif

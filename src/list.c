@@ -6,13 +6,13 @@
 /*   By: pdavid <pdavid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/08 14:13:12 by pdavid            #+#    #+#             */
-/*   Updated: 2019/05/08 18:34:37 by pdavid           ###   ########.fr       */
+/*   Updated: 2019/05/22 15:27:19 by pdavid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/ft_ls.h"
 
-t_info *ft_create_node(t_info *info, char *path, char *name)
+t_info *create_list(t_info *info, char *path, char *name)
 {
 	t_info	*new;
 	t_info	*cur;
@@ -38,4 +38,51 @@ t_info *ft_create_node(t_info *info, char *path, char *name)
 		new->prev = cur;
 	}
 	return (new);
+}
+
+t_info  *merge_links(t_env *e, t_info *first, t_info *second)
+{
+	if (!(first))
+		return (second);
+	if (!(second))
+		return (first);
+	if (first->name[e->i] < second->name[e->i])
+	{
+		e->i = 0;
+		first->next = merge_links(e, first->next, second);
+		first->next->prev = first;
+		first->prev = NULL;
+		return (first);
+	}
+	else if (first->name[e->i] > second->name[e->i]) 
+	{
+		e->i = 0;
+		second->next = merge_links(e, first, second->next);
+		second->next->prev = second;
+		second->prev = NULL;
+		return (second);
+	}
+	else
+	{
+		e->i++;
+		return (merge_links(e, first, second));
+	}
+}
+
+t_info	*merge_split(t_info *head)
+{
+	t_info *fast;
+	t_info *slow;
+	t_info *temp;
+
+	fast = head;
+	slow = head;
+	while (fast->next && fast->next->next)
+	{
+		fast = fast->next->next;
+		slow = slow->next;
+	}
+	temp = slow->next;
+	slow->next = NULL;
+	return (temp);
 }
