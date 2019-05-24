@@ -6,7 +6,7 @@
 /*   By: pdavid <pdavid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/22 15:21:35 by pdavid            #+#    #+#             */
-/*   Updated: 2019/05/22 16:18:38 by pdavid           ###   ########.fr       */
+/*   Updated: 2019/05/23 16:09:53 by pdavid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,8 +39,7 @@ t_info  *merge_sort(t_env *e, t_info *head)
 	second = merge_split(head);
 	head = merge_sort(e, head);
 	second = merge_sort(e, second);
-	return (e->options.t == true ? time_sort(e, head, second) 
-		: merge_links(e, head, second));
+	return (e->options.t == true ? time_sort(e, head, second) : merge_links(e, head, second));
 }
 
 t_info  *time_sort(t_env *e, t_info *first, t_info *second)
@@ -49,15 +48,18 @@ t_info  *time_sort(t_env *e, t_info *first, t_info *second)
 		return (second);
 	if (!(second))
 		return (first);
-	// if (ft_get_time(first, second))
-	// {
-	// 	first->next = time_sort(e, first->next, second);
-	// 	first->next->prev = first;
-	// 	first->prev = NULL;
-	// 	return (first);
-	// }
-	second->next = time_sort(e, first, second->next);
-	second->next->prev = second;
-	second->prev = NULL;
-	return (second);
+	if (validate_time(first, second))
+	{
+		first->next = time_sort(e, first->next, second);
+		first->next->prev = first;
+		first->prev = NULL;
+		return (first);
+	}
+	else
+	{
+		second->next = time_sort(e, first, second->next);
+		second->next->prev = second;
+		second->prev = NULL;
+		return (second);	
+	}
 }

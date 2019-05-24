@@ -6,7 +6,7 @@
 /*   By: pdavid <pdavid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/08 16:03:26 by pdavid            #+#    #+#             */
-/*   Updated: 2019/05/22 16:25:05 by pdavid           ###   ########.fr       */
+/*   Updated: 2019/05/22 22:28:58 by pdavid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@ void init_paths(t_env *e, int ac)
 
 void init_env(t_env *e, int ac)
 {
+	init_paths(e, ac);
 	e->options.R = false;
 	e->options.a = false;
 	e->options.t = false;
@@ -35,7 +36,6 @@ void init_env(t_env *e, int ac)
 	e->args = NULL;
 	e->type = NULL;
 	e->dargs = NULL;
-	init_paths(e, ac);
 	e->i = 0;
 	e->x = 0;
 	e->px = 0;

@@ -6,11 +6,32 @@
 /*   By: pdavid <pdavid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/08 14:08:55 by pdavid            #+#    #+#             */
-/*   Updated: 2019/05/22 16:23:44 by pdavid           ###   ########.fr       */
+/*   Updated: 2019/05/23 17:05:20 by pdavid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/ft_ls.h"
+
+char	*path_join(char const *s1, char const *s2)
+{
+	char	*path;
+	int		i;
+	int		j;
+	
+	i = 0;
+	j = 0;
+	path = (char *)malloc(ft_strlen(s1) + ft_strlen(s2) + 2);
+	while (s1[i])
+	{
+		path[i] = s1[i];
+		i++;
+	}
+	path[i++] = '/';
+	while (s2[j])
+		path[i++] = s2[j++];
+	path[i] = '\0';
+	return (path);
+}
 
 t_info		*err(int i, char *str)
 {
@@ -34,40 +55,30 @@ t_info		*err(int i, char *str)
 t_info		*ft_ls(t_env *e, char *path, t_info *info)
 {
 	DIR				*type;
-	struct dirent	*file;
+	struct	dirent	*file;
 	char			*etype;
 
 	if ((type = opendir(path)) == NULL)
-	{
-		return(err(2, path));
-	}
-	while ((file = readdir(type)) && (etype = ft_strjoin(path, file->d_name)))
+		return (err(2, path));
+	while ((file = readdir(type)) && (etype = path_join(path, file->d_name)))
 	{
 		if ((ft_strncmp(file->d_name, ".", 1) == 0 && IFa == true) || NOTDOT)
-		{
 			info = create_list(info, etype, file->d_name);
-		}
 		else
 		{
 			free(etype);
 			continue;
 		}
-		// if (DRPERMS && ((!IFa && NOTDOT) || (IFa && DOTCMP && ISDOT)))
-		// {
-		// 	info->sub = ft_ls(e, etype, info->sub);
-		// }
-		if (info)
-		{
+		if (DRPERMS && ((!IFa && NOTDOT) || (IFa && DOTCMP && ISDOT)))
+			info->sub = ft_ls(e, etype, info->sub);
+		else if (info)
 			info->sub = NULL;
-		}
 		free(etype);
 	}
 	closedir(type);
 	while (info && info->prev != NULL)
-	{
 		info = info->prev;
-	}
-	return(info);
+	return (info);
 }
 
 void		parse_path(int ac, char **av, t_env *e)
@@ -85,7 +96,7 @@ void		parse_path(int ac, char **av, t_env *e)
 	}
 	else
 	{
-		return ;
+		return;
 	}
 	e->x = e->x + 1;
 	e->px = e->px + 1;

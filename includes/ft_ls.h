@@ -6,7 +6,7 @@
 /*   By: pdavid <pdavid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/08 14:13:22 by pdavid            #+#    #+#             */
-/*   Updated: 2019/05/22 16:24:06 by pdavid           ###   ########.fr       */
+/*   Updated: 2019/05/23 16:28:34 by pdavid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@
 # define PATH e->paths[e->px]
 # define HEDDATA head->data->st_mode
 # define ARGLETTER argv[e->x][e->i]
-# define ISDOT strcmp(file->d_name, ".")
+# define ISDOT ft_strcmp(file->d_name, ".")
 # define DOTCMP ft_strncmp(file->d_name, "..", 3)
 # define STRJOIN2 ft_strjoin2(path, file->d_name)
 # define STRNEW ft_strnew(ft_strlen(head->path) + 1)
@@ -92,6 +92,8 @@ typedef	struct			s_env
 	void				validate_path(t_env *e);
 	void				validate_dir(t_env *e, struct stat *info);
 	void    			validate_total(t_env *e, t_info *head);
+	void				validate_perms(t_info *head, char *perms);
+	int					validate_time(t_info *first, t_info *second);
 	
 /*		Functions that handle				*/
 /*		sorting of the ls					*/
@@ -121,7 +123,7 @@ t_info					*merge_split(t_info *head);
 
 void				long_print(t_env *e, t_info *head);
 void				basic_print(t_env *e, t_info *head);
-void				info_print(t_info *head);
+void				info_print(char *perms, t_info *head, USR, struct group *grp);
 void				time_print(t_info *head);
 void				path_print(t_env *e, t_info *head);
 void				display_print(t_env *e, t_info *head);
